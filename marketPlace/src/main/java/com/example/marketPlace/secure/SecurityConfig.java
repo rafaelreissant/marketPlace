@@ -1,4 +1,4 @@
-package com.example.marketPlace.Secure;
+package com.example.marketPlace.secure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

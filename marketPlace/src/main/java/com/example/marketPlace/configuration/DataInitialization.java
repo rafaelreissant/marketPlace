@@ -1,7 +1,7 @@
-package com.example.marketPlace.Configuration;
+package com.example.marketPlace.configuration;
 
-import com.example.marketPlace.Model.User;
-import com.example.marketPlace.Repository.UserRepository;
+import com.example.marketPlace.model.User;
+import com.example.marketPlace.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
