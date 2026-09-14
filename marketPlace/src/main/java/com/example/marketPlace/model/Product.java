@@ -38,11 +38,9 @@ public class Product {
     @Positive
     private BigDecimal price;
 
-    @NotNull
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @NotNull
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
