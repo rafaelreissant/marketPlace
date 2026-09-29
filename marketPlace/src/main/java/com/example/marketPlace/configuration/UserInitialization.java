@@ -11,7 +11,7 @@ import java.util.List;
 
 @Configuration
 @Transactional
-public class DataInitialization {
+public class UserInitialization {
 
     @Bean
     CommandLineRunner initDataBase(UserRepository userRepository) {
