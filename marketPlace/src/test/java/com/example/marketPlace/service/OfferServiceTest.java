@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -34,7 +37,8 @@ class OfferServiceTest {
     private OfferService offerService;
 
     @Test
-    void canMakeOneOfferToProduct(){
+    void canMakeOneOfferToProduct() {
+
         User user = new User();
         user.setName("test");
         user.setPassword("123");
@@ -50,16 +54,28 @@ class OfferServiceTest {
 
         productRepository.save(product);
 
+        when(productRepository.findById(product.getId()))
+                .thenReturn(Optional.of(product));
+
         Offer offer = new Offer();
-        offer.setOfferedPrice(BigDecimal.valueOf(-1000));
-        offer.setUser(user);
-        offer.setProduct(product);
+        offer.setOfferedPrice(BigDecimal.valueOf(900));
 
-        when(offerRepository.findByUserIdAndProductId(
-                user.getId(),product.getId())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(user));
 
-        offerService.makeOffer(offer);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        null
+                );
+
+        SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
+
+        offerService.makeOffer(offer, product.getId());
 
         verify(offerRepository).save(offer);
+
+        SecurityContextHolder.clearContext();
     }
 }
