@@ -41,6 +41,15 @@ public class OfferService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        Optional<Offer> existingOffer =
+                offerRepository.findByUserIdAndProductId(
+                        user.getId(),
+                        product.getId());
+
+        if (existingOffer.isPresent()) {
+            throw new RuntimeException("User already made an offer for this product");
+        }
+
         offer.setUser(user);
         offer.setProduct(product);
 
