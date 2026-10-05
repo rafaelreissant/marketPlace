@@ -5,10 +5,7 @@ import com.example.marketPlace.model.Product;
 import com.example.marketPlace.model.User;
 import com.example.marketPlace.repository.OfferRepository;
 import com.example.marketPlace.repository.ProductRepository;
-import com.example.marketPlace.repository.UserRepository;
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.marketPlace.service.authencitcate.AuthenticatedUserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,27 +16,20 @@ import java.util.UUID;
 public class OfferService {
 
     private final OfferRepository offerRepository;
-    private final UserRepository userRepository;
+    private final AuthenticatedUserService authenticatedUserService;
     private final ProductRepository productRepository;
 
-    public OfferService(OfferRepository offerRepository, UserRepository userRepository, ProductRepository productRepository) {
+    public OfferService(OfferRepository offerRepository, AuthenticatedUserService authenticatedUserService, ProductRepository productRepository) {
         this.offerRepository = offerRepository;
-        this.userRepository = userRepository;
+        this.authenticatedUserService = authenticatedUserService;
         this.productRepository = productRepository;
     }
 
-    public void makeOffer(Offer offer, UUID productId){
+    public void makeOffer(Offer offer){
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        User user = authenticatedUserService.getUserAuthenticated();
 
-        String email = authentication.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = offer.getProduct();
 
         Optional<Offer> existingOffer =
                 offerRepository.findByUserIdAndProductId(
@@ -58,13 +48,7 @@ public class OfferService {
 
     public Offer getOfferById(UUID uuid){
 
-        @Nullable Authentication authentication = SecurityContextHolder
-                                                    .getContext().getAuthentication();
-
-        String email = authentication.getName();
-
-        User user = userRepository
-                .findByEmail(email).orElseThrow(() -> new RuntimeException(" User not found"));
+        User user = authenticatedUserService.getUserAuthenticated();
 
         return offerRepository.findByUserIdAndProductId(uuid, user.getId())
                 .orElseThrow(() -> new RuntimeException(" offer not found"));
