@@ -4,7 +4,7 @@ import com.example.marketPlace.controller.DTO.ProductDTO;
 import com.example.marketPlace.controller.mapper.ProductMapper;
 import com.example.marketPlace.model.Product;
 import com.example.marketPlace.service.ProductService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +28,16 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Void> createProduct(@Valid @RequestBody ProductDTO productDTO){
+
         Product product = productMapper.toProduct(productDTO);
+
         productService.createProduct(product);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/id").buildAndExpand(product.getId()).toUri();
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(product.getId())
+                .toUri();
 
         return ResponseEntity.created(location).build();
     }

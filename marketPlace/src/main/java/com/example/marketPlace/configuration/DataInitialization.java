@@ -15,7 +15,7 @@ import java.util.List;
 
 @Configuration
 @Transactional
-public class DataInitialization {
+public class DataInitialization {/*
 
     @Bean
     CommandLineRunner initDatabase(
@@ -65,5 +65,5 @@ public class DataInitialization {
                 );
             }
         };
-    }
+    }*/
 }
