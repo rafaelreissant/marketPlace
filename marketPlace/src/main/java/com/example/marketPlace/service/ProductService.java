@@ -29,12 +29,25 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public Product getProductById(UUID uuid){
+    public Product getProductById(UUID productId){
+
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("product not found"));
+    }
+
+    public Product getMyProductById(UUID uuid){
 
         User user = authenticatedUserService.getUserAuthenticated();
 
         return productRepository.findByIdAndUserId(uuid, user.getId())
                 .orElseThrow(() -> new RuntimeException("product not found"));
+    }
+
+    public List<Product> getAllProductsByUserId(){
+
+        User user = authenticatedUserService.getUserAuthenticated();
+
+        return productRepository.findAllProductByUserId(user.getId());
     }
 
     public List<Product> getAllProduct(){

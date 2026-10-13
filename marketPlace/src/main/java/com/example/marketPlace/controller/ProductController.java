@@ -64,4 +64,19 @@ public class ProductController {
 
         return ResponseEntity.ok(productDTOList);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<ProductDTO>> getAllMyProducts(){
+        List<ProductDTO> productDTOList = productService.getAllProductsByUserId()
+                .stream().map(productMapper::toDto).toList();
+
+        return ResponseEntity.ok(productDTOList);
+    }
+
+    @GetMapping("/me/{id}")
+    public ResponseEntity getMyProductById(@PathVariable("id") UUID id){
+        Product product = productService.getMyProductById(id);
+
+        return ResponseEntity.ok(productMapper.toDto(product));
+    }
 }
