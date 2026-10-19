@@ -1,7 +1,9 @@
 package com.example.marketPlace.configuration;
 
+import com.example.marketPlace.model.Offer;
 import com.example.marketPlace.model.Product;
 import com.example.marketPlace.model.User;
+import com.example.marketPlace.repository.OfferRepository;
 import com.example.marketPlace.repository.ProductRepository;
 import com.example.marketPlace.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -13,36 +15,33 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 @Configuration
-@Transactional
-public class DataInitialization {/*
+public class DataInitialization {
 
     @Bean
     CommandLineRunner initDatabase(
             UserRepository userRepository,
             ProductRepository productRepository,
+            OfferRepository offerRepository,
             PasswordEncoder passwordEncoder) {
 
         return args -> {
 
-            if (userRepository.count() == 0) {
+            User user = userRepository
+                    .findByEmail("joao@email.com")
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        newUser.setName("João");
+                        newUser.setEmail("joao@email.com");
+                        newUser.setPassword(
+                                passwordEncoder.encode("123456")
+                        );
 
-                User user = new User();
-                user.setName("João");
-                user.setEmail("joao@email.com");
-                user.setPassword(
-                        passwordEncoder.encode("123456")
-                );
-
-                userRepository.save(user);
-            }
+                        return userRepository.save(newUser);
+                    });
 
             if (productRepository.count() == 0) {
-
-                User user = userRepository
-                        .findByEmail("joao@email.com")
-                        .orElseThrow(() ->
-                                new RuntimeException("User not found"));
 
                 Product product1 = new Product();
                 product1.setName("Notebook");
@@ -64,6 +63,43 @@ public class DataInitialization {/*
                         List.of(product1, product2)
                 );
             }
+
+            User seller = userRepository
+                    .findByEmail("maria@email.com")
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        newUser.setName("Maria");
+                        newUser.setEmail("maria@email.com");
+                        newUser.setPassword(
+                                passwordEncoder.encode("123456")
+                        );
+
+                        return userRepository.save(newUser);
+                    });
+
+            Product productForOffer = productRepository.findAll()
+                    .stream()
+                    .filter(product ->
+                            !product.getUser().getId()
+                                    .equals(seller.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (productForOffer != null
+                    && offerRepository.findByUserIdAndProductId(
+                    seller.getId(),
+                    productForOffer.getId()
+            ).isEmpty()) {
+
+                Offer offer = new Offer();
+                offer.setUser(seller);
+                offer.setProduct(productForOffer);
+                offer.setOfferedPrice(
+                        BigDecimal.valueOf(2300)
+                );
+
+                offerRepository.save(offer);
+            }
         };
-    }*/
+    }
 }
