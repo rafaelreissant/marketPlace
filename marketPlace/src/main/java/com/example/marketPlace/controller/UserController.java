@@ -30,8 +30,11 @@ public class UserController {
         User user = userMapper.toUser(userDTO);
         userService.saveUser(user);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/id").buildAndExpand(user.getId()).toUri();
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(user.getId())
+                .toUri();
 
         return ResponseEntity.created(location).build();
     }
