@@ -80,8 +80,7 @@ class UserControllerTest {
                 .thenReturn(user);
 
         mockMvc.perform(get("/user/{id}", userId)
-                        .with(user("test").roles("USER")))
-                .andDo(print());
+                        .with(user("test").roles("USER")));
     }
 
     @Test
@@ -104,7 +103,6 @@ class UserControllerTest {
         when(userMapper.toUserDTO(user)).thenReturn(userDTO);
 
         mockMvc.perform(get("/user"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("João"))
                 .andExpect(jsonPath("$[0].email").value("joao@email.com"));

@@ -1,6 +1,5 @@
 package com.example.marketPlace.controller.DTO;
 
-import com.example.marketPlace.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
