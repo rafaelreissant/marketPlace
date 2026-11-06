@@ -1,5 +1,7 @@
 package com.example.marketPlace.service;
 
+import com.example.marketPlace.error.exceptions.EmailInUse;
+import com.example.marketPlace.error.exceptions.UserNotFound;
 import com.example.marketPlace.model.User;
 import com.example.marketPlace.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +23,7 @@ public class UserService {
 
     public void saveUser(User user){
         if(userRepository.existsByEmail(user.getEmail())){
-            throw new RuntimeException("Email already in use");
+            throw new EmailInUse("Email already in use");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -31,7 +33,7 @@ public class UserService {
 
     public User getUserById(UUID id){
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(" user not found"));
+                .orElseThrow(() -> new UserNotFound(" user not found"));
     }
 
     public List<User> getAllUser(){

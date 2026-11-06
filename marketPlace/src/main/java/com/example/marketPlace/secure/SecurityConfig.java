@@ -1,5 +1,6 @@
 package com.example.marketPlace.secure;
 
+import com.example.marketPlace.error.SecurityErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            SecurityErrorHandler securityErrorHandler) throws Exception {
 
         http
                 .authorizeHttpRequests(auth -> auth
@@ -24,6 +27,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/product", "/product/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(securityErrorHandler)
+                        .accessDeniedHandler(securityErrorHandler)
+                )
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())

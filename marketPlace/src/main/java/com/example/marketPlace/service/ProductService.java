@@ -1,5 +1,6 @@
 package com.example.marketPlace.service;
 
+import com.example.marketPlace.error.exceptions.ProductNotFoundException;
 import com.example.marketPlace.model.Product;
 import com.example.marketPlace.model.User;
 import com.example.marketPlace.repository.ProductRepository;
@@ -32,7 +33,7 @@ public class ProductService {
     public Product getProductById(UUID productId){
 
         return productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("product not found"));
     }
 
     public Product getMyProductById(UUID uuid){
@@ -40,7 +41,7 @@ public class ProductService {
         User user = authenticatedUserService.getUserAuthenticated();
 
         return productRepository.findByIdAndUserId(uuid, user.getId())
-                .orElseThrow(() -> new RuntimeException("product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("product not found"));
     }
 
     public List<Product> getAllProductsByUserId(){

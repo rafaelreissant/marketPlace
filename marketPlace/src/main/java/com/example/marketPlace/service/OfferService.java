@@ -1,5 +1,9 @@
 package com.example.marketPlace.service;
 
+import com.example.marketPlace.error.exceptions.BusinessRuleException;
+import com.example.marketPlace.error.exceptions.OfferAlreadyMade;
+import com.example.marketPlace.error.exceptions.OfferNotFound;
+import com.example.marketPlace.error.exceptions.ProductNotFoundException;
 import com.example.marketPlace.model.Offer;
 import com.example.marketPlace.model.Product;
 import com.example.marketPlace.model.User;
@@ -31,10 +35,10 @@ public class OfferService {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() ->
-                        new RuntimeException("Product not found"));
+                        new ProductNotFoundException("Product not found"));
 
         if (product.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException(
+            throw new BusinessRuleException(
                     "You cannot make an offer on your own product");
         }
 
@@ -44,7 +48,7 @@ public class OfferService {
                         product.getId());
 
         if (existingOffer.isPresent()) {
-            throw new RuntimeException("User already made an offer for this product");
+            throw new OfferAlreadyMade("User already made an offer for this product");
         }
 
         offer.setUser(user);
@@ -60,7 +64,7 @@ public class OfferService {
         return offerRepository
                 .findByIdAndUserId(offerId, user.getId())
                 .orElseThrow(() ->
-                        new RuntimeException(" offer not found"));
+                        new OfferNotFound(" offer not found"));
     }
 
     public Offer getOfferReceivedById(UUID offerId) {
@@ -70,7 +74,7 @@ public class OfferService {
         return offerRepository
                 .findByIdAndProductUserId(offerId, user.getId())
                 .orElseThrow(() ->
-                        new RuntimeException("Offer not found"));
+                        new OfferNotFound("Offer not found"));
     }
 
     public List<Offer> getAllOffer(){
