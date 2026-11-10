@@ -23,83 +23,106 @@ public class DataInitialization {
     CommandLineRunner initDatabase(
             UserRepository userRepository,
             ProductRepository productRepository,
-            OfferRepository offerRepository,
             PasswordEncoder passwordEncoder) {
 
         return args -> {
 
-            User user = userRepository
+            User joao = userRepository
                     .findByEmail("joao@email.com")
                     .orElseGet(() -> {
-                        User newUser = new User();
-                        newUser.setName("João");
-                        newUser.setEmail("joao@email.com");
-                        newUser.setPassword(
+                        User user = new User();
+                        user.setName("João");
+                        user.setEmail("joao@email.com");
+                        user.setPassword(
                                 passwordEncoder.encode("123456")
                         );
+                        return userRepository.save(user);
+                    });
 
-                        return userRepository.save(newUser);
+            User maria = userRepository
+                    .findByEmail("maria@email.com")
+                    .orElseGet(() -> {
+                        User user = new User();
+                        user.setName("Maria");
+                        user.setEmail("maria@email.com");
+                        user.setPassword(
+                                passwordEncoder.encode("123456")
+                        );
+                        return userRepository.save(user);
                     });
 
             if (productRepository.count() == 0) {
 
-                Product product1 = new Product();
-                product1.setName("Notebook");
-                product1.setDescription(
-                        "Notebook usado em bom estado"
-                );
-                product1.setPrice(BigDecimal.valueOf(2500));
-                product1.setUser(user);
-
-                Product product2 = new Product();
-                product2.setName("Monitor");
-                product2.setDescription(
-                        "Monitor 24 polegadas"
-                );
-                product2.setPrice(BigDecimal.valueOf(800));
-                product2.setUser(user);
-
-                productRepository.saveAll(
-                        List.of(product1, product2)
-                );
-            }
-
-            User seller = userRepository
-                    .findByEmail("maria@email.com")
-                    .orElseGet(() -> {
-                        User newUser = new User();
-                        newUser.setName("Maria");
-                        newUser.setEmail("maria@email.com");
-                        newUser.setPassword(
-                                passwordEncoder.encode("123456")
-                        );
-
-                        return userRepository.save(newUser);
-                    });
-
-            Product productForOffer = productRepository.findAll()
-                    .stream()
-                    .filter(product ->
-                            !product.getUser().getId()
-                                    .equals(seller.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (productForOffer != null
-                    && offerRepository.findByUserIdAndProductId(
-                    seller.getId(),
-                    productForOffer.getId()
-            ).isEmpty()) {
-
-                Offer offer = new Offer();
-                offer.setUser(seller);
-                offer.setProduct(productForOffer);
-                offer.setOfferedPrice(
-                        BigDecimal.valueOf(2300)
+                List<Product> products = List.of(
+                        createProduct(
+                                "Notebook Dell",
+                                "Notebook Dell usado em bom estado",
+                                2500, joao
+                        ),
+                        createProduct(
+                                "Notebook Lenovo",
+                                "Notebook Lenovo com 16GB de RAM",
+                                3200, maria
+                        ),
+                        createProduct(
+                                "Monitor LG",
+                                "Monitor LG de 24 polegadas",
+                                800, joao
+                        ),
+                        createProduct(
+                                "Monitor Samsung",
+                                "Monitor Samsung de 27 polegadas",
+                                1200, maria
+                        ),
+                        createProduct(
+                                "Teclado Mecânico",
+                                "Teclado mecânico RGB",
+                                350, joao
+                        ),
+                        createProduct(
+                                "Mouse Logitech",
+                                "Mouse sem fio Logitech",
+                                150, maria
+                        ),
+                        createProduct(
+                                "Headset Gamer",
+                                "Headset gamer com microfone",
+                                450, joao
+                        ),
+                        createProduct(
+                                "Cadeira Gamer",
+                                "Cadeira gamer ergonômica",
+                                1800, maria
+                        ),
+                        createProduct(
+                                "Webcam Logitech",
+                                "Webcam Full HD",
+                                280, joao
+                        ),
+                        createProduct(
+                                "SSD 1TB",
+                                "SSD de 1TB",
+                                600, maria
+                        )
                 );
 
-                offerRepository.save(offer);
+                productRepository.saveAll(products);
             }
         };
+    }
+
+    private Product createProduct(
+            String name,
+            String description,
+            double price,
+            User user) {
+
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(BigDecimal.valueOf(price));
+        product.setUser(user);
+
+        return product;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -61,6 +62,19 @@ public class ProductController {
         if (productDTOList.isEmpty()){
             return ResponseEntity.noContent().build();
         }
+
+        return ResponseEntity.ok(productDTOList);
+    }
+
+    @GetMapping("/param")
+    public ResponseEntity<List<ProductDTO>> getAllProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice) {
+
+        List<ProductDTO> productDTOList =
+                productService.searchProducts(name, minPrice,maxPrice)
+                        .stream().map(productMapper::toDto).toList();
 
         return ResponseEntity.ok(productDTOList);
     }

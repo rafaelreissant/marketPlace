@@ -5,8 +5,11 @@ import com.example.marketPlace.model.Product;
 import com.example.marketPlace.model.User;
 import com.example.marketPlace.repository.ProductRepository;
 import com.example.marketPlace.service.authencitcate.AuthenticatedUserService;
+import com.example.marketPlace.service.specification.ProductSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,4 +58,23 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<Product> searchProducts(String name, BigDecimal minPrice, BigDecimal maxPrice){
+
+        Specification<Product> specification =
+                Specification.unrestricted();
+
+        if (name != null && !name.isBlank()){
+            specification = specification.and(ProductSpecification.hasName(name));
+        }
+
+        if (minPrice != null){
+            specification = specification.and(ProductSpecification.priceGreaterThanEqualTo(minPrice));
+        }
+
+        if (maxPrice != null){
+            specification = specification.and(ProductSpecification.priceLessThanOrEqualTo(maxPrice));
+        }
+
+        return productRepository.findAll(specification);
+    }
 }
